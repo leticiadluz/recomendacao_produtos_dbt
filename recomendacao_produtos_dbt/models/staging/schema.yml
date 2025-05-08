@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: recomendacao
+    database: RECOMENDACAO_ANALISE    
+    schema: PUBLIC
+    tables:
+      - name: TABELA_CLIENTES
+        description: "Tabela bruta de clientes do e-commerce"
+
+models:
+  - name: stg_clientes
+    description: "Modelo de staging para limpeza e padronização de clientes"
+    columns:
+      - name: cliente_id
+        description: "Identificador único do cliente, usado como PK e FK em outras tabelas"
+        tests:
+          - not_null
+          - unique
+
+      - name: nome
+        description: "Nome do cliente"
+        tests:
+          - not_null
+
+      - name: cep
+        description: "CEP do cliente"
+        tests:
+          - not_null
+
+      - name: rua
+        description: "Nome da rua do endereço do cliente"
+
+      - name: numero
+        description: "Número da residência do cliente"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "TRY_CAST(numero AS INTEGER) > 0"
