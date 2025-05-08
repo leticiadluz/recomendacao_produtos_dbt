@@ -58,20 +58,19 @@ version: '1.0.0'                      # Versão do projeto
 
 profile: 'recomendacao_produtos_dbt'  # Nome deve ser igual ao usado no profiles.yml
 
-# Caminhos das pastas onde o dbt vai buscar os arquivos
+
 model-paths: ["models"]               # Modelos (transformações em SQL)
-analysis-paths: ["analyses"]          # Análises temporárias em SQL
-test-paths: ["tests"]                 # Testes customizados
-seed-paths: ["seeds"]                 # Dados fixos 
-macro-paths: ["macros"]               # Funções reutilizáveis em Jinja
-snapshot-paths: ["snapshots"]         # Tabelas de histórico 
+analysis-paths: ["analyses"]         
+test-paths: ["tests"]                
+seed-paths: ["seeds"]               
+macro-paths: ["macros"]               
 
 
 clean-targets:
   - "target"
   - "dbt_packages"
 
-# Configuração de como os modelos serão criados por camada
+
 models:
   recomendacao_produtos_dbt:          # Nome da pasta do projeto 
     staging:                          # Subpasta dentro de models
@@ -107,7 +106,7 @@ models/
 │   │   ├── stg_clientes.sql
 │   │   └── schema.yml
 │   └── ...
-├── intermediate/            # Camada com lógica de limpeza/tratamento
+├── intermediate/            # Camada com lógica de tratamento
 │   ├── clientes/
 │   │   ├── int_clientes.sql
 │   │   └── schema.yml
@@ -152,7 +151,7 @@ models:
 ```
 # 3 - Iniciando o projeto:
 
- 1 - **Para iniciar o projeto, precisamos materializar os primeiros dados.** Depois de criar a estrutura inicial do projeto dbt e os arquivos da camada staging (como o stg_clientes.sql e seu schema.yml), o próximo passo é executar o modelo para que ele seja materializado no banco de dados (neste caso, como uma view no Snowflake).  Isso é feito com o comando:
+ 1 - **Para iniciar o projeto, precisamos materializar os primeiros dados.** Depois de criar a estrutura inicial do projeto dbt e os arquivos da camada staging (como o stg_clientes.sql e schema.yml), o próximo passo é executar o modelo para que ele seja materializado no banco de dados, (neste caso, como uma view no Snowflake).  Isso é feito com o comando:
  
  
 ```bash
@@ -179,9 +178,9 @@ Essas correções são pontuais e têm o único objetivo de permitir a continuid
 
 **Importante, o comando dbt run materializa os dados no banco de dados mesmo que os testes definidos no schema.yml tenham falhado. Ou seja, a criação da view ou tabela não depende da aprovação nos testes, os testes servem apenas para alertar sobre problemas nos dados, mas não bloqueiam a execução do modelo.**
 
-2 - Aplicamos as correções diretamente no modelo stg_clientes.sql, realizando a remoção de duplicidades e a substituição de valores negativos na coluna numero. Em seguida, executamos novamente o comando dbt run.
+3 - Aplicamos as correções diretamente no modelo stg_clientes.sql, realizando a remoção de duplicidades e a substituição de valores negativos na coluna numero. Em seguida, executamos novamente o comando dbt run.
 
-Esse comando recompila o modelo atualizado e substitui a view anterior no Snowflake por uma nova versão, já contendo as correções realizadas. A view STG_CLIENTES passa então a refletir os dados padronizados e validados conforme as novas regras definidas no modelo.
+Esse comando recompila o modelo atualizado e substitui a view anterior no Snowflake por uma nova versão, já contendo as correções realizadas. A view STG_CLIENTES passa então a refletir os dados padronizados e validados conforme as novas regras definidas no modelo:
 
 ![alt text](imagens/view_stg.png)
-imagem não foi lida
+

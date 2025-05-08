@@ -5,4 +5,5 @@ dbt_packages/
 analyses/
 snapshots/
 macros/
+tests/
 
