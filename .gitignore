@@ -1,2 +1,8 @@
 venv/
 logs/
+target/
+dbt_packages/
+analyses/
+snapshots/
+macros/
+

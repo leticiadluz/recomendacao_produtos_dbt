@@ -182,3 +182,6 @@ Essas correções são pontuais e têm o único objetivo de permitir a continuid
 2 - Aplicamos as correções diretamente no modelo stg_clientes.sql, realizando a remoção de duplicidades e a substituição de valores negativos na coluna numero. Em seguida, executamos novamente o comando dbt run.
 
 Esse comando recompila o modelo atualizado e substitui a view anterior no Snowflake por uma nova versão, já contendo as correções realizadas. A view STG_CLIENTES passa então a refletir os dados padronizados e validados conforme as novas regras definidas no modelo.
+
+![alt text](imagens/view_stg.png)
+imagem não foi lida
