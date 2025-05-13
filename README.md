@@ -184,3 +184,5 @@ Esse comando recompila o modelo atualizado e substitui a view anterior no Snowfl
 
 ![alt text](imagens/view_stg.png)
 
+4 - Também materializamos as tabelas PRODUTOS_ESPORTIVOS e TABELA_TIPOS_PAGAMENTO. Como essas tabelas não apresentaram erros, nenhuma correção foi necessária.
+Já para a tabela TABELA_CLIENTES, corrigimos inicialmente os seguintes problemas: IDs de transação duplicados para o mesmo produto e campos de ID de cliente nulos.

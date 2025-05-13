@@ -7,6 +7,12 @@ sources:
     tables:
       - name: TABELA_CLIENTES
         description: "Tabela bruta de clientes do e-commerce"
+      - name: PRODUTOS_ESPORTIVOS
+        description: "Tabela bruta de produtos esportivos vendidos no e-commerce"
+      - name: TABELA_TIPOS_PAGAMENTO
+        description: "Tabela de tipos de pagamento disponíveis no sistema"
+      - name: TABELA_PEDIDOS
+        description: "Tabela de pedidos realizados pelos clientes"
 
 models:
   - name: stg_clientes
@@ -36,3 +42,66 @@ models:
         tests:
           - dbt_utils.expression_is_true:
               expression: "TRY_CAST(numero AS INTEGER) > 0"
+
+  - name: stg_produtos
+    description: "Modelo de staging da tabela de produtos esportivos"
+    columns:
+      - name: id_produto
+        description: "Identificador único do produto"
+        tests:
+          - not_null
+          - unique
+
+      - name: nome_produto
+        description: "Nome do produto"
+
+      - name: descricao
+        description: "Descrição detalhada do produto"
+        tests:
+          - not_null
+          - unique
+          
+  - name: stg_pagamentos
+    description: "Staging da tabela de tipos de pagamento"
+    columns:
+      - name: id_pagamento
+        description: "Identificador único da forma de pagamento"
+        tests:
+          - not_null
+          - unique
+
+      - name: tipo_pagamento
+        description: "Descrição da forma de pagamento"
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_pedidos
+    description: "Staging da tabela de pedidos"
+    columns:
+      - name: id_transacao
+        description: "Identificador da transação"
+
+      - name: id_cliente
+        description: "Identificador do cliente"
+        tests:
+          - not_null
+
+      - name: id_produto
+        description: "Identificador do produto comprado"
+
+      - name: id_pagamento
+        description: "Identificador do método de pagamento"
+
+      - name: data_pedido
+        description: "Data do pedido"
+
+      - name: quantidade
+        description: "Quantidade de itens pedidos"
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_transacao
+            - id_produto
+
