@@ -186,3 +186,30 @@ Esse comando recompila o modelo atualizado e substitui a view anterior no Snowfl
 
 4 - Também materializamos as tabelas PRODUTOS_ESPORTIVOS e TABELA_TIPOS_PAGAMENTO. Como essas tabelas não apresentaram erros, nenhuma correção foi necessária.
 Já para a tabela TABELA_CLIENTES, corrigimos inicialmente os seguintes problemas: IDs de transação duplicados para o mesmo produto e campos de ID de cliente nulos.
+
+5 - Agora temos todos os dados necessários materializados no SnowFlake:
+
+![alt text](imagens/views_stg.png)
+
+6 - Na sequência, o processo foi replicado para as camadas intermediate e marts, com a aplicação de tratamentos customizados conforme as particularidades de cada camada.
+
+# 4 - Resumo dos tratamentos realizados:
+No projeto de recomendação de produtos usando dbt, foram implementadas transformações em duas camadas principais: staging e intermediate. Na camada staging, foram criados modelos para padronização e limpeza dos dados brutos.
+
+No modelo stg_clientes, foi feita a renomeação das colunas da tabela original TABELA_CLIENTES e a limpeza da coluna NUMERO, transformando valores nulos ou iguais a zero em NULL e valores negativos em positivos via ABS(). Foram aplicados testes de qualidade como not_null e unique para o cliente_id, not_null em nome e cep, além de uma verificação com expression_is_true garantindo que numero seja maior que zero.
+
+No modelo stg_pedidos, os dados vieram da tabela TABELA_PEDIDOS, e foi aplicado um filtro para garantir que apenas registros com ID_CLIENTE não nulo fossem considerados. Além disso, duplicatas foram removidas por meio de ROW_NUMBER() particionado por ID_TRANSACAO e ID_PRODUTO, mantendo apenas os registros mais recentes e com maior quantidade. Também foram aplicados testes como not_null para colunas-chave e um teste de combinação única (dbt_utils.unique_combination_of_columns) entre id_transacao e id_produto.
+
+No modelo stg_produtos, a tabela PRODUTOS_ESPORTIVOS foi transformada com renomeação de colunas e remoção de duplicatas. Foram aplicados testes como not_null e unique para id_produto e descricao, garantindo integridade e unicidade.
+
+No modelo stg_pagamentos, a tabela TABELA_TIPOS_PAGAMENTO foi padronizada com nomes adequados, e aplicada deduplicação. Foram feitos testes not_null e unique para ambas as colunas: id_pagamento e tipo_pagamento.
+
+Na camada intermediate, os dados passaram por transformações adicionais com foco em regras de negócio e filtragens específicas.
+
+O modelo int_pedidos utilizou a view externa STG_PEDIDOS e aplicou um filtro para considerar apenas pedidos realizados a partir de 1º de janeiro de 2024. Além disso, foram mantidos apenas pedidos cujos id_produto existem na view STG_PRODUTOS. Os testes aplicados incluíram not_null nas colunas principais, relationships para garantir que id_cliente exista em STG_CLIENTES e id_produto em STG_PRODUTOS e também um teste com expression_is_true validando a data mínima do pedido.
+
+O modelo int_clientes utilizou a view externa STG_CLIENTES e aplicou uma regra para manter apenas clientes com idade igual ou superior a 18 anos. Os testes incluíram not_null e unique para ID_CLIENTE, not_null para NOME_CLIENTE e DATA_NASCIMENTO e um teste com expression_is_true para garantir que apenas clientes maiores de 18 anos estejam cadastrados.
+
+As views STG_PRODUTOS e STG_PAGAMENTOS estão limpas, padronizadas e validadas. Como não exigem filtros adicionais ou correções, podem ser utilizadas diretamente nos modelos da camada marts, sem necessidade de uma camada intermediate intermediária.
+
+Com essas transformações, o projeto agora possui uma base confiável e validada para construção dos modelos analíticos finais (marts).

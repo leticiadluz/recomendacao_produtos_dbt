@@ -1,0 +1,81 @@
+version: 2
+
+sources:
+  - name: recomendacao
+    database: RECOMENDACAO_ANALISE    
+    schema: PUBLIC
+    tables:
+      - name: STG_CLIENTES
+        description: "View bruta de clientes do e-commerce"
+      - name: STG_PRODUTOS
+        description: "View bruta de produtos esportivos vendidos no e-commerce"
+      - name: STG_PAGAMENTOS
+        description: "View de tipos de pagamento disponíveis no sistema"
+      - name: STG_PEDIDOS
+        description: "View de pedidos realizados pelos clientes"
+
+version: 2
+
+models:
+  - name: int_pedidos
+    description: Modelo intermediário de pedidos com aplicação de regras de validação
+      mantém apenas pedidos com data igual ou posterior a 2024-01-01 e cujos produtos e clientes existem nas views STG do Snowflake.
+
+    columns:
+      - name: id_transacao
+        description: "Identificador da transação de pedido"
+        tests:
+          - not_null
+
+      - name: id_cliente
+        description: "Identificador do cliente que fez o pedido"
+        tests:
+          - not_null
+          - relationships:
+              to: source('recomendacao', 'STG_CLIENTES')
+              field: CLIENTE_ID
+
+      - name: id_produto
+        description: "Identificador do produto comprado"
+        tests:
+          - not_null
+          - relationships:
+              to: source('recomendacao', 'STG_PRODUTOS')
+              field: ID_PRODUTO
+
+      - name: id_pagamento
+        description: "Identificador da forma de pagamento usada"
+
+      - name: data_pedido
+        description: "Data em que o pedido foi realizado"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "{{ column_name }} >= to_date('2024-01-01')"
+
+      - name: quantidade
+        description: "Quantidade de unidades compradas no pedido"
+
+  - name: int_clientes
+    description: 
+      Modelo intermediário de clientes que remove registros com menos de 18 anos,
+      garantindo consistência etária mínima.
+
+    columns:
+      - name: CLIENTE_ID
+        description: "Identificador único do cliente"
+        tests:
+          - not_null
+          - unique
+
+      - name: NOME
+        description: "Nome completo do cliente"
+        tests:
+          - not_null
+
+      - name: DATA_NASCIMENTO
+        description: "Data de nascimento do cliente"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "{{ column_name }} <= DATEADD(YEAR, -18, CURRENT_DATE)"
