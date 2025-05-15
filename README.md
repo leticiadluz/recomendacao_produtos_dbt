@@ -213,3 +213,29 @@ O modelo int_clientes utilizou a view externa STG_CLIENTES e aplicou uma regra p
 As views STG_PRODUTOS e STG_PAGAMENTOS estão limpas, padronizadas e validadas. Como não exigem filtros adicionais ou correções, podem ser utilizadas diretamente nos modelos da camada marts, sem necessidade de uma camada intermediate intermediária.
 
 Com essas transformações, o projeto agora possui uma base confiável e validada para construção dos modelos analíticos finais (marts).
+
+# 5 - Modelagem Final:
+
+Neste modelo final da camada mart foi construída uma view consolidada com o objetivo de apresentar, por transação, os produtos comprados e seus respectivos nomes, de forma agrupada em uma única linha. 
+
+O objetivo principal dessa modelagem é gerar uma tabela compatível com o algoritmo Apriori da biblioteca mlxtend, que requer que cada linha represente uma transação e contenha todos os itens em formato de lista. 
+
+As fontes de dados utilizadas foram:
+- int_pedidos: modelo intermediário contendo os pedidos válidos, filtrados por data (igual ou posterior a 2024-01-01), e com integridade referencial com clientes e produtos.
+- stg_produtos: modelo de staging com os nomes dos produtos esportivos vendidos.
+
+As principais transformações realizadas foram:
+- Realização de um join entre int_pedidos e stg_produtos, associando cada id_produto ao seu respectivo nome_produto.
+- Agrupamento por id_transacao, de modo que cada transação apareça apenas uma vez.
+- Agregação dos produtos comprados na transação, tanto para os identificadores dos produtos quanto para os nomes dos produtos, resultando em duas colunas separadas:
+  - produtos: contém os id_produto separados por vírgula.
+  - nomes_produtos: contém os nomes dos produtos separados por vírgula.
+
+![alt text](imagens/mart.png)
+
+Essa estrutura é adequada para ser utilizada em algoritmos de análise de cestas de mercado (market basket analysis), como o Apriori da biblioteca mlxtend, pois organiza os dados de forma transacional com itens agregados por linha. 
+A view pode ser consumida diretamente ferramentas de BI.
+
+Autor:  
+Leticia da Luz  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/leticiadluz/)
