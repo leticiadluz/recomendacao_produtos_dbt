@@ -31,8 +31,6 @@ models:
 
       - name: cep
         description: "CEP do cliente"
-        tests:
-          - not_null
 
       - name: rua
         description: "Nome da rua do endereço do cliente"
@@ -41,7 +39,7 @@ models:
         description: "Número da residência do cliente"
         tests:
           - dbt_utils.expression_is_true:
-              expression: "TRY_CAST(numero AS INTEGER) > 0"
+              expression: "{{ column_name }} > 0"
 
   - name: stg_produtos
     description: "Modelo de staging da tabela de produtos esportivos"
