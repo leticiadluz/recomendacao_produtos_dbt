@@ -1,7 +1,5 @@
 # Recomendação de Produtos com Análise de Cesta de Mercado: Transformação dos Dados com dbt Core
 
-https://www.youtube.com/watch?v=mBrk5hvqc84 20 min
-
 # 1 Introdução
 Como mencionado anteriormente, após a ingestão inicial dos dados no Snowflake, as transformações são realizadas com o dbt Core (Data Build Tool), uma ferramenta especializada em transformação de dados baseada em SQL, que permite construir pipelines modulares, auditáveis e versionadas.
 
